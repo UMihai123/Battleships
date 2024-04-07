@@ -6,12 +6,12 @@ import CustomInput from '../components/CustomInput';
 import { Endpoints } from '../constants/Endpoints';
 import axios from "axios";
 
-type ProfileScreenNavigationProp = StackNavigationProp<
+type NavigationProp = StackNavigationProp<
   RootStackParamList
 >;
 
 type Props = {
-  navigation: ProfileScreenNavigationProp;
+  navigation: NavigationProp;
 };
 
 function onRegister(email: string, password: string) {

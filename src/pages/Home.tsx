@@ -1,34 +1,37 @@
 import { StyleSheet, Text, View, Button } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from "../types/types"
-import { useEffect, useState } from 'react';
+import { useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-type ProfileScreenNavigationProp = StackNavigationProp<
+type NavigationProp = StackNavigationProp<
   RootStackParamList
 >;
 
 type Props = {
-  navigation: ProfileScreenNavigationProp;
+  navigation: NavigationProp;
 };
 
 export default function Home({ navigation }: Props) {
     const [isUserLoggedIn, onLoginStatusChanged] = useState(false);
 
-    useEffect(() => {
-        var userId = AsyncStorage.getItem("userId")
-        if (userId != null) {
-            var exp = AsyncStorage.getItem("exp")
-            exp.then((exp) => {
-                if (exp != null){
-                    if (parseInt(exp) > Date.now() / 1000) {
-                        console.log("Logged In!")
-                        onLoginStatusChanged(true);
+    useFocusEffect(
+        useCallback(() => {
+            var userId = AsyncStorage.getItem("userId")
+            if (userId != null) {
+                var exp = AsyncStorage.getItem("exp")
+                exp.then((exp) => {
+                    if (exp != null){
+                        if (parseInt(exp) > Date.now() / 1000) {
+                            console.log("Logged In!")
+                            onLoginStatusChanged(true);
+                        }
                     }
-                }
-            })
-        }
-    }, []);
+                })
+            }
+        }, [])
+    );
 
     return (
       <View style={styles.container}>

@@ -8,15 +8,15 @@ import { Endpoints } from '../constants/Endpoints';
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 
-type ProfileScreenNavigationProp = StackNavigationProp<
+type NavigationProp = StackNavigationProp<
   RootStackParamList
 >;
 
 type Props = {
-  navigation: ProfileScreenNavigationProp;
+  navigation: NavigationProp;
 };
 
-function onLogin(email: string, password: string) {
+function onLogin(email: string, password: string, navigation: NavigationProp) {
     axios.post(Endpoints.Login, {
         email: email,
         password: password
@@ -24,8 +24,11 @@ function onLogin(email: string, password: string) {
     .then(function (response) {
         var user = jwtDecode<User>(response.data.accessToken);
         AsyncStorage.setItem("token", response.data.accessToken)
-        AsyncStorage.setItem("userId", user.userId);
-        AsyncStorage.setItem("exp", user.exp);
+        AsyncStorage.setItem("userId", user.userId).then(() => {
+            AsyncStorage.setItem("exp", user.exp).then(() => {
+                navigation.navigate("Home")
+            });
+        });
     })
     .catch(function (error) {
         console.log(error);
@@ -48,7 +51,7 @@ export default function Login({ navigation }: Props) {
                          onValueChanged={onChangePassword}
                          value={password} />
             <Button title="Login"
-                    onPress={() => {onLogin(email, password); navigation.navigate("Home")}} />
+                    onPress={() => onLogin(email, password, navigation)} />
         </View>
     );
 }
